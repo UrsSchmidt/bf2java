@@ -138,39 +138,39 @@ bool parseChar() {
             printf("  ifeq L%d\n", label(x, y, 3));
             printf("  goto L%d\n", label(x, y, 4));
             printf("; middle '?' @%d,%d\n", x, y);
-			const int sx = x;
-			const int sy = y;
-			/* right */
+            const int sx = x;
+            const int sy = y;
+            /* right */
             printf("L%d:\n", label(sx, sy, 1));
-			d = RIGHT;
-			move();
-			parsePath();
-			x = sx;
-			y = sy;
+            d = RIGHT;
+            move();
+            parsePath();
+            x = sx;
+            y = sy;
             printf("  goto L%d\n", label(sx, sy, 5));
-			/* down */
+            /* down */
             printf("L%d:\n", label(sx, sy, 2));
-			d = DOWN;
-			move();
-			parsePath();
-			x = sx;
-			y = sy;
+            d = DOWN;
+            move();
+            parsePath();
+            x = sx;
+            y = sy;
             printf("  goto L%d\n", label(sx, sy, 5));
-			/* left */
+            /* left */
             printf("L%d:\n", label(sx, sy, 3));
-			d = LEFT;
-			move();
-			parsePath();
-			x = sx;
-			y = sy;
+            d = LEFT;
+            move();
+            parsePath();
+            x = sx;
+            y = sy;
             printf("  goto L%d\n", label(sx, sy, 5));
-			/* up */
+            /* up */
             printf("L%d:\n", label(sx, sy, 4));
-			d = UP;
-			move();
-			parsePath();
-			x = sx;
-			y = sy;
+            d = UP;
+            move();
+            parsePath();
+            x = sx;
+            y = sy;
             printf("L%d:\n", label(sx, sy, 5));
             printf("; end '?' @%d,%d\n", sx, sy);
         }   break;
