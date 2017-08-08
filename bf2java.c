@@ -217,11 +217,11 @@ bool parseChar() {
         }   break;
         default:  printf("  ; not supported command '%c' @%d,%d\n", c, x, y); break;
         }
-        /* end this path if branching */
+        /* end path if branching or halting */
         if ((c == '?') || (c == '@') ||
             (c == '_') || (c == '|')) return true;
     }
-    /* continue this path */
+    /* continue path */
     return false;
 }
 
