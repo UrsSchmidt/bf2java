@@ -26,7 +26,7 @@ bool writechr = false;
 /* '.' */
 bool writeint = false;
 /* '?' */
-bool random = false;
+bool rnddir = false;
 /* '~' */
 bool readchr = false;
 
@@ -254,7 +254,7 @@ int main(int argc, char* argv[]) {
             if (c == '&') readint = true;
             if (c == ',') writechr = true;
             if (c == '.') writeint = true;
-            if (c == '?') random = true;
+            if (c == '?') rnddir = true;
             if (c == '~') readchr = true;
         }
         y++;
@@ -263,7 +263,7 @@ int main(int argc, char* argv[]) {
 
     printf(".class public %s\n", CLASSNAME);
     printf(".super java/lang/Object\n");
-    if (random) {
+    if (rnddir) {
         printf(".field private static rnd I\n");
     }
     printf("\n");
