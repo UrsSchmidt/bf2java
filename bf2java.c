@@ -88,14 +88,14 @@ bool parseChar() {
         switch (c) {
         case ' ': break;
         case '!': {
-            printf("; begin '!' @%d,%d\n", x, y);
+            printf("; '!' begin @%d,%d\n", x, y);
             printf("  ifeq L%d\n", label(x, y, 1));
             printf("  bipush 0\n");
             printf("  goto L%d\n", label(x, y, 2));
             printf("L%d:\n", label(x, y, 1));
             printf("  bipush 1\n");
             printf("L%d:\n", label(x, y, 2));
-            printf("; end '!' @%d,%d\n", x, y);
+            printf("; '!' end @%d,%d\n", x, y);
         }   break;
         case '"': stringmode = true; break;
         case '#': stepsize = 2; break;
@@ -112,7 +112,9 @@ bool parseChar() {
         case '<': d = LEFT; break;
         case '>': d = RIGHT; break;
         case '?': {
-            printf("; begin '?' @%d,%d\n", x, y);
+            const int sx = x;
+            const int sy = y;
+            printf("; '?' begin @%d,%d\n", sx, sy);
             printf("  ldc2_w +4.0\n");
             printf("  invokestatic Method java/lang/Math random ()D\n");
             printf("  dmul\n");
@@ -123,23 +125,21 @@ bool parseChar() {
             printf("  iconst_1\n");
             printf("  isub\n");
             printf("  putstatic Field %s rnd I\n", CLASSNAME);
-            printf("  ifeq L%d\n", label(x, y, 1));
+            printf("  ifeq L%d\n", label(sx, sy, 1));
             printf("  getstatic Field %s rnd I\n", CLASSNAME);
             printf("  dup\n");
             printf("  iconst_1\n");
             printf("  isub\n");
             printf("  putstatic Field %s rnd I\n", CLASSNAME);
-            printf("  ifeq L%d\n", label(x, y, 2));
+            printf("  ifeq L%d\n", label(sx, sy, 2));
             printf("  getstatic Field %s rnd I\n", CLASSNAME);
             printf("  dup\n");
             printf("  iconst_1\n");
             printf("  isub\n");
             printf("  putstatic Field %s rnd I\n", CLASSNAME);
-            printf("  ifeq L%d\n", label(x, y, 3));
-            printf("  goto L%d\n", label(x, y, 4));
-            printf("; middle '?' @%d,%d\n", x, y);
-            const int sx = x;
-            const int sy = y;
+            printf("  ifeq L%d\n", label(sx, sy, 3));
+            printf("  goto L%d\n", label(sx, sy, 4));
+            printf("; '?' middle @%d,%d\n", sx, sy);
             /* right */
             printf("L%d:\n", label(sx, sy, 1));
             d = RIGHT;
@@ -172,20 +172,20 @@ bool parseChar() {
             x = sx;
             y = sy;
             printf("L%d:\n", label(sx, sy, 5));
-            printf("; end '?' @%d,%d\n", sx, sy);
+            printf("; '?' end @%d,%d\n", sx, sy);
         }   break;
         case '@': printf("  goto LHALT\n"); break;
         case'\\': printf("  swap\n"); break;
         case '^': d = UP; break;
         case '`': {
-            printf("; begin '`' @%d,%d\n", x, y);
+            printf("; '`' begin @%d,%d\n", x, y);
             printf("  if_icmpgt L%d\n", label(x, y, 1));
             printf("  bipush 0\n");
             printf("  goto L%d\n", label(x, y, 2));
             printf("L%d:\n", label(x, y, 1));
             printf("  bipush 1\n");
             printf("L%d:\n", label(x, y, 2));
-            printf("; end '`' @%d,%d\n", x, y);
+            printf("; '`' end @%d,%d\n", x, y);
         }   break;
 //      case 'g': break; /* not supported */
 //      case 'p': break; /* not supported */
@@ -193,10 +193,10 @@ bool parseChar() {
         case '~': printf("  invokestatic Method %s readChr ()I\n", CLASSNAME); break;
         case '_':
         case '|': {
-            printf("; begin '%c' @%d,%d\n", c, x, y);
-            printf("  ifne L%d\n", label(x, y, 1));
             const int sx = x;
             const int sy = y;
+            printf("; '%c' begin @%d,%d\n", c, sx, sy);
+            printf("  ifne L%d\n", label(sx, sy, 1));
             /* right/down (false) */
             d = (c == '_') ? RIGHT : DOWN;
             move();
@@ -213,9 +213,11 @@ bool parseChar() {
             y = sy;
             /* end */
             printf("L%d:\n", label(sx, sy, 2));
-            printf("; end '%c' @%d,%d\n", c, sx, sy);
+            printf("; '%c' end @%d,%d\n", c, sx, sy);
         }   break;
-        default:  printf("  ; not supported command '%c' @%d,%d\n", c, x, y); break;
+        default:
+            printf("; '%c' not supported @%d,%d\n", c, x, y);
+            break;
         }
         /* end path if branching or halting */
         if ((c == '?') || (c == '@') ||
