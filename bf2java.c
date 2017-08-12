@@ -87,7 +87,7 @@ bool parseChar() {
         }
         switch (c) {
         case ' ': break;
-        case '!': {
+        case '!':
             printf("; '!' begin @%d,%d\n", x, y);
             printf("  ifeq L%d\n", label(x, y, 1));
             printf("  bipush 0\n");
@@ -96,7 +96,7 @@ bool parseChar() {
             printf("  bipush 1\n");
             printf("L%d:\n", label(x, y, 2));
             printf("; '!' end @%d,%d\n", x, y);
-        }   break;
+            break;
         case '"': stringmode = true; break;
         case '#': stepsize = 2; break;
         case '$': printf("  pop\n"); break;
@@ -177,7 +177,7 @@ bool parseChar() {
         case '@': printf("  goto LHALT\n"); break;
         case'\\': printf("  swap\n"); break;
         case '^': d = UP; break;
-        case '`': {
+        case '`':
             printf("; '`' begin @%d,%d\n", x, y);
             printf("  if_icmpgt L%d\n", label(x, y, 1));
             printf("  bipush 0\n");
@@ -186,7 +186,7 @@ bool parseChar() {
             printf("  bipush 1\n");
             printf("L%d:\n", label(x, y, 2));
             printf("; '`' end @%d,%d\n", x, y);
-        }   break;
+            break;
 //      case 'g': break; /* not supported */
 //      case 'p': break; /* not supported */
         case 'v': d = DOWN; break;
