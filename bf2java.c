@@ -1,11 +1,11 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#define WIDTH  80
+#define WIDTH 80
 #define HEIGHT 25
 
 #define CLASSNAME "Main"
-#define STACK  20
+#define STACK 20
 #define LOCALS 10
 
 #define label(x,y,a) (((((y)*(WIDTH))+(x))*10)+(a))
@@ -52,16 +52,16 @@ void move() {
     stepsize = 1;
 }
 
-bool parseChar();
+bool parse_char();
 
-void parsePath() {
-    while (true) {
-        if (parseChar()) return;
+void parse_path() {
+    for (;;) {
+        if (parse_char()) return;
         move();
     }
 }
 
-bool parseChar() {
+bool parse_char() {
     const char c = source[x][y];
     if (stringmode) {
         if (c == '"') {
@@ -144,7 +144,7 @@ bool parseChar() {
             printf("L%d:\n", label(sx, sy, 1));
             d = RIGHT;
             move();
-            parsePath();
+            parse_path();
             x = sx;
             y = sy;
             printf("  goto L%d\n", label(sx, sy, 5));
@@ -152,7 +152,7 @@ bool parseChar() {
             printf("L%d:\n", label(sx, sy, 2));
             d = DOWN;
             move();
-            parsePath();
+            parse_path();
             x = sx;
             y = sy;
             printf("  goto L%d\n", label(sx, sy, 5));
@@ -160,7 +160,7 @@ bool parseChar() {
             printf("L%d:\n", label(sx, sy, 3));
             d = LEFT;
             move();
-            parsePath();
+            parse_path();
             x = sx;
             y = sy;
             printf("  goto L%d\n", label(sx, sy, 5));
@@ -168,7 +168,7 @@ bool parseChar() {
             printf("L%d:\n", label(sx, sy, 4));
             d = UP;
             move();
-            parsePath();
+            parse_path();
             x = sx;
             y = sy;
             printf("L%d:\n", label(sx, sy, 5));
@@ -187,8 +187,8 @@ bool parseChar() {
             printf("L%d:\n", label(x, y, 2));
             printf("; '`' end @%d,%d\n", x, y);
             break;
-//      case 'g': break; /* not supported */
-//      case 'p': break; /* not supported */
+/*      case 'g': break; */ /* not supported */
+/*      case 'p': break; */ /* not supported */
         case 'v': d = DOWN; break;
         case '~': printf("  invokestatic Method %s readChr ()I\n", CLASSNAME); break;
         case '_':
@@ -200,7 +200,7 @@ bool parseChar() {
             /* right/down (false) */
             d = (c == '_') ? RIGHT : DOWN;
             move();
-            parsePath();
+            parse_path();
             x = sx;
             y = sy;
             printf("  goto L%d\n", label(sx, sy, 2));
@@ -208,7 +208,7 @@ bool parseChar() {
             printf("L%d:\n", label(sx, sy, 1));
             d = (c == '_') ? LEFT : UP;
             move();
-            parsePath();
+            parse_path();
             x = sx;
             y = sy;
             /* end */
@@ -227,7 +227,7 @@ bool parseChar() {
     return false;
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     if (argc < 2) {
         printf("Usage: %s <src>\n", argv[0]);
         return 0;
@@ -240,15 +240,15 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    FILE* f = fopen(argv[1], "r");
-    if (!f) {
+    FILE *file = fopen(argv[1], "r");
+    if (!file) {
         printf("Error reading file\n");
         return 0;
     }
     /* +2 in case of CRLF */
     char line[WIDTH + 2];
     int y = 0;
-    while (fgets(line, sizeof(line), f)) {
+    while (fgets(line, sizeof(line), file)) {
         for (int x = 0; x < WIDTH; x++) {
             const char c = line[x];
             if (!((' ' <= c) && (c <= '~'))) break;
@@ -261,7 +261,7 @@ int main(int argc, char* argv[]) {
         }
         y++;
     }
-    fclose(f);
+    fclose(file);
 
     printf(".class public %s\n", CLASSNAME);
     printf(".super java/lang/Object\n");
@@ -327,9 +327,10 @@ int main(int argc, char* argv[]) {
     }
     printf("  .limit stack %d\n", STACK);
     printf("  .limit locals %d\n", LOCALS);
-    parsePath();
+    parse_path();
     printf("LHALT:\n");
     printf("  return\n");
     printf(".end method\n");
+
     return 0;
 }
