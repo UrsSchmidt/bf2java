@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #define WIDTH 80
 #define HEIGHT 25
@@ -230,7 +231,7 @@ bool parse_char() {
 int main(int argc, char *argv[]) {
     if (argc < 2) {
         printf("Usage: %s <src>\n", argv[0]);
-        return 0;
+        return EXIT_FAILURE;
     }
 
     for (int y = 0; y < HEIGHT; y++) {
@@ -243,7 +244,7 @@ int main(int argc, char *argv[]) {
     FILE *file = fopen(argv[1], "r");
     if (!file) {
         printf("Error reading file\n");
-        return 0;
+        return EXIT_FAILURE;
     }
     /* +2 in case of CRLF */
     char line[WIDTH + 2];
@@ -332,5 +333,5 @@ int main(int argc, char *argv[]) {
     printf("  return\n");
     printf(".end method\n");
 
-    return 0;
+    return EXIT_SUCCESS;
 }
