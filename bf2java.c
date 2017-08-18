@@ -21,18 +21,6 @@ enum { RIGHT, DOWN, LEFT, UP } d = RIGHT;
 bool stringmode = false;
 /* '#' */
 int stepsize = 1;
-/* '&' */
-bool readint = false;
-/* ',' */
-bool writechr = false;
-/* '.' */
-bool writeint = false;
-/* '?' */
-bool rnddir = false;
-/* '@' */
-bool halt = false;
-/* '~' */
-bool readchr = false;
 
 void move() {
     switch (d) {
@@ -202,14 +190,14 @@ bool parse_char() {
             const int sy = y;
             printf("; '%c' begin @%d,%d\n", c, sx, sy);
             printf("  ifne L%d\n", label(sx, sy, 1));
-            /* right/down (false) */
+            /* right/down (if false) */
             d = (c == '_') ? RIGHT : DOWN;
             move();
             parse_path();
             x = sx;
             y = sy;
             printf("  goto L%d\n", label(sx, sy, 2));
-            /* left/up (true) */
+            /* left/up (if true) */
             printf("L%d:\n", label(sx, sy, 1));
             d = (c == '_') ? LEFT : UP;
             move();
@@ -220,9 +208,7 @@ bool parse_char() {
             printf("L%d:\n", label(sx, sy, 2));
             printf("; '%c' end @%d,%d\n", c, sx, sy);
         }   break;
-        default:
-            printf("; '%c' not supported @%d,%d\n", c, x, y);
-            break;
+        default: printf("; '%c' not supported @%d,%d\n", c, x, y);
         }
         /* end path if branching or halting */
         if (c == '?' || c == '@' ||
@@ -250,6 +236,14 @@ int main(int argc, char **argv) {
         fprintf(stderr, "Error: Reading file failed\n");
         return EXIT_FAILURE;
     }
+
+    bool using_rint = false; /* '&' */
+    bool using_wchr = false; /* ',' */
+    bool using_wint = false; /* '.' */
+    bool using_rand = false; /* '?' */
+    bool using_halt = false; /* '@' */
+    bool using_rchr = false; /* '~' */
+
     /* +2 in case of CRLF */
     char line[WIDTH + 2];
     int y = 0;
@@ -258,12 +252,14 @@ int main(int argc, char **argv) {
             const char c = line[x];
             if (!in(' ', c, '~')) break;
             source[x][y] = c;
-            if (c == '&') readint = true;
-            if (c == ',') writechr = true;
-            if (c == '.') writeint = true;
-            if (c == '?') rnddir = true;
-            if (c == '@') halt = true;
-            if (c == '~') readchr = true;
+            switch (c) {
+            case '&': using_rint = true; break;
+            case ',': using_wchr = true; break;
+            case '.': using_wint = true; break;
+            case '?': using_rand = true; break;
+            case '@': using_halt = true; break;
+            case '~': using_rchr = true; break;
+            }
         }
         y++;
     }
@@ -271,10 +267,10 @@ int main(int argc, char **argv) {
 
     printf(".class public %s\n", CLASSNAME);
     printf(".super java/lang/Object\n");
-    if (rnddir)
+    if (using_rand)
         printf(".field private static rnd I\n");
     printf("\n");
-    if (readchr) {
+    if (using_rchr) {
         printf(".method private static readChr : ()I\n");
         printf("  .throws java/io/IOException\n");
         printf("  .limit stack 1\n");
@@ -285,7 +281,7 @@ int main(int argc, char **argv) {
         printf(".end method\n");
         printf("\n");
     }
-    if (readint) {
+    if (using_rint) {
         printf(".method private static readInt : ()I\n");
         printf("  .throws java/io/IOException\n");
         printf("  .limit stack 5\n");
@@ -303,7 +299,7 @@ int main(int argc, char **argv) {
         printf(".end method\n");
         printf("\n");
     }
-    if (writechr) {
+    if (using_wchr) {
         printf(".method private static writeChr : (I)V\n");
         printf("  .limit stack 2\n");
         printf("  .limit locals 1\n");
@@ -315,7 +311,7 @@ int main(int argc, char **argv) {
         printf(".end method\n");
         printf("\n");
     }
-    if (writeint) {
+    if (using_wint) {
         printf(".method private static writeInt : (I)V\n");
         printf("  .limit stack 2\n");
         printf("  .limit locals 1\n");
@@ -327,12 +323,12 @@ int main(int argc, char **argv) {
         printf("\n");
     }
     printf(".method public static main : ([Ljava/lang/String;)V\n");
-    if (readchr || readint)
+    if (using_rchr || using_rint)
         printf("  .throws java/io/IOException\n");
     printf("  .limit stack %d\n", STACK);
     printf("  .limit locals %d\n", LOCALS);
     parse_path();
-    if (halt)
+    if (using_halt)
         printf("LHALT:\n");
     printf("  return\n");
     printf(".end method\n");
