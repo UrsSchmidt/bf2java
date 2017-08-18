@@ -9,6 +9,7 @@
 #define STACK 20
 #define LOCALS 10
 
+#define in(a,b,c) (((a)<=(b))&&((b)<=(c)))
 #define label(x,y,a) (((((y)*(WIDTH))+(x))*10)+(a))
 
 char source[WIDTH][HEIGHT];
@@ -28,6 +29,8 @@ bool writechr = false;
 bool writeint = false;
 /* '?' */
 bool rnddir = false;
+/* '@' */
+bool halt = false;
 /* '~' */
 bool readchr = false;
 
@@ -53,6 +56,7 @@ void move() {
     stepsize = 1;
 }
 
+/* mutually recursive */
 bool parse_char();
 
 void parse_path() {
@@ -70,13 +74,13 @@ bool parse_char() {
         } else {
             printf("  bipush %d\n", c);
         }
-    } else if (('0' <= c) && (c <= '9')) {
+    } else if (in('0', c, '9')) {
         printf("  bipush %d\n", c - '0');
     } else {
-        if ((c == '<') || (c == '>') ||
-            (c == '?') ||
-            (c == '^') || (c == 'v') ||
-            (c == '_') || (c == '|')) {
+        if (c == '<' || c == '>' ||
+            c == '?' ||
+            c == '^' || c == 'v' ||
+            c == '_' || c == '|') {
             /* end path if already visited */
             if (visited[x][y]) {
                 printf("  goto L%d\n", label(x, y, 0));
@@ -188,8 +192,8 @@ bool parse_char() {
             printf("L%d:\n", label(x, y, 2));
             printf("; '`' end @%d,%d\n", x, y);
             break;
-/*      case 'g': break; */ /* not supported */
-/*      case 'p': break; */ /* not supported */
+     /* case 'g': break; */ /* not supported */
+     /* case 'p': break; */ /* not supported */
         case 'v': d = DOWN; break;
         case '~': printf("  invokestatic Method %s readChr ()I\n", CLASSNAME); break;
         case '_':
@@ -221,16 +225,16 @@ bool parse_char() {
             break;
         }
         /* end path if branching or halting */
-        if ((c == '?') || (c == '@') ||
-            (c == '_') || (c == '|')) return true;
+        if (c == '?' || c == '@' ||
+            c == '_' || c == '|') return true;
     }
     /* continue path */
     return false;
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char **argv) {
     if (argc < 2) {
-        printf("Usage: %s <src>\n", argv[0]);
+        fprintf(stderr, "Usage: %s <src>\n", argv[0]);
         return EXIT_FAILURE;
     }
 
@@ -243,7 +247,7 @@ int main(int argc, char *argv[]) {
 
     FILE *file = fopen(argv[1], "r");
     if (!file) {
-        printf("Error reading file\n");
+        fprintf(stderr, "Error: Reading file failed\n");
         return EXIT_FAILURE;
     }
     /* +2 in case of CRLF */
@@ -252,12 +256,13 @@ int main(int argc, char *argv[]) {
     while (fgets(line, sizeof(line), file)) {
         for (int x = 0; x < WIDTH; x++) {
             const char c = line[x];
-            if (!((' ' <= c) && (c <= '~'))) break;
+            if (!in(' ', c, '~')) break;
             source[x][y] = c;
             if (c == '&') readint = true;
             if (c == ',') writechr = true;
             if (c == '.') writeint = true;
             if (c == '?') rnddir = true;
+            if (c == '@') halt = true;
             if (c == '~') readchr = true;
         }
         y++;
@@ -266,9 +271,8 @@ int main(int argc, char *argv[]) {
 
     printf(".class public %s\n", CLASSNAME);
     printf(".super java/lang/Object\n");
-    if (rnddir) {
+    if (rnddir)
         printf(".field private static rnd I\n");
-    }
     printf("\n");
     if (readchr) {
         printf(".method private static readChr : ()I\n");
@@ -323,13 +327,13 @@ int main(int argc, char *argv[]) {
         printf("\n");
     }
     printf(".method public static main : ([Ljava/lang/String;)V\n");
-    if (readchr || readint) {
+    if (readchr || readint)
         printf("  .throws java/io/IOException\n");
-    }
     printf("  .limit stack %d\n", STACK);
     printf("  .limit locals %d\n", LOCALS);
     parse_path();
-    printf("LHALT:\n");
+    if (halt)
+        printf("LHALT:\n");
     printf("  return\n");
     printf(".end method\n");
 
