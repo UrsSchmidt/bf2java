@@ -29,9 +29,9 @@
 |<code>&#124;</code>|   |   |   |  2|  2|  X|                        |
 |`~`                |  3|  5|   |  1|   |   |                        |
 
-\*A base costs; instructions
-\*B base costs; declarations
-\*C base costs; labels
-\*D costs each time used; instructions
-\*E costs each time used; labels
-\*F these will additionally generate either an instruction or a label each time they are visited
+\*A base costs; instructions  
+\*B base costs; declarations  
+\*C base costs; labels  
+\*D costs each time used; instructions  
+\*E costs each time used; labels  
+\*F these will additionally generate either an instruction or a label each time they are visited  
