@@ -1,0 +1,11 @@
+.TH BF2JAVA 1
+.SH NAME
+\fBbf2java\fR \-\- a Befunge-93 to Java (Jasmin) compiler
+.SH SYNOPSIS
+\fBbf2java\fR src=\fIFILE\fR
+.SH DESCRIPTION
+\fBbf2java\fR is a Befunge-93 to Java (Jasmin) compiler.
+.PP
+It doesn't insert the original source code into the binary. For this reason, \fBg\fR and \fBp\fR instructions are not supported.
+.PP
+Instructions like \fB$\fR will fail if the stack contains too few elements. Because of this, some programs will have to be modified to push a \fB0\fR as their first instruction.
