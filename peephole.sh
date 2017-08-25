@@ -73,7 +73,7 @@ function removeDeadCode() {
 # L1:
 # -->
 # L1:
-function removeNullJumps() {
+function removeRedundantJumps() {
     newLines=()
     lastLine=""
     for line in "${lines[@]}"; do
@@ -126,7 +126,7 @@ function removeRedundantIndirections() {
 removeDeadLabels
 removeDeadCode
 removeDeadLabels
-removeNullJumps
+removeRedundantJumps
 removeDeadLabels
 
 # print lines

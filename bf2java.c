@@ -2,12 +2,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/* TODO add parameter -t int and -t long */
+
+/* TODO add parameter -w */
 #define WIDTH 80
+/* TODO add parameter -h */
 #define HEIGHT 25
 
+/* TODO add parameter -c */
 #define CLASSNAME "Main"
+/* TODO add parameter -s */
 #define STACK 20
-#define LOCALS 10
+#define LOCALS 1
 
 #define in(a,b,c) (((a)<=(b))&&((b)<=(c)))
 #define label(x,y,a) (((((y)*(WIDTH))+(x))*10)+(a))
@@ -49,12 +55,11 @@ void move() {
 bool parse_char();
 
 void parse_path() {
-    for (;;) {
-        if (parse_char()) return;
+    while (parse_char())
         move();
-    }
 }
 
+/* returns true if the part should be continued, false otherwise */
 bool parse_char() {
     const char c = source[x][y];
     if (stringmode) {
@@ -73,7 +78,7 @@ bool parse_char() {
             /* end path if already visited */
             if (visited[x][y]) {
                 printf("  goto LBRANCH%d\n", label(x, y, 0));
-                return true;
+                return false;
             }
             /* otherwise generate new label */
             printf("LBRANCH%d:\n", label(x, y, 0));
@@ -215,10 +220,10 @@ bool parse_char() {
         }
         /* end path if branching or halting */
         if (c == '?' || c == '@' ||
-            c == '_' || c == '|') return true;
+            c == '_' || c == '|') return false;
     }
     /* continue path */
-    return false;
+    return true;
 }
 
 int main(int argc, char **argv) {
