@@ -1,11 +1,13 @@
-# Needed Libraries
+# Installation
+
+## Needed Libraries
 
 * `gcc`
 
-# Building
+## Building
 
 Run `build.sh`.
 
-# Installation
+## Installation
 
 On Ubuntu you can simply run `install.sh`. Otherwise just copy the generated executable and the man page manually to the appropriate directories.
