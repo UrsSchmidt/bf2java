@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export LC_ALL=C
+
 # see: https://stackoverflow.com/a/8574392
 containsElement () {
     local e match="$1"
