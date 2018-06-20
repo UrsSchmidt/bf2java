@@ -59,7 +59,7 @@ void parse_path() {
         move();
 }
 
-/* returns true if the part should be continued, false otherwise */
+/* returns true if the path should be continued, false otherwise */
 bool parse_char() {
     const char c = source[x][y];
     if (stringmode) {
