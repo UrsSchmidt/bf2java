@@ -64,6 +64,7 @@ bool parse_char() {
     const char c = source[x][y];
     if (stringmode) {
         if (c == '"') {
+            printf("; '\"' end @%d,%d\n", x, y);
             stringmode = false;
         } else {
             printf("  bipush %d\n", c);
@@ -97,7 +98,10 @@ bool parse_char() {
             printf("; '!' end @%d,%d\n", x, y);
             locallabel += 2;
             break;
-        case '"': stringmode = true; break;
+        case '"':
+            printf("; '\"' begin @%d,%d\n", x, y);
+            stringmode = true;
+            break;
         case '#': stepsize = 2; break;
         case '$': printf("  pop\n"); break;
         case '%': printf("  irem\n"); break;
