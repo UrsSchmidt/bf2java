@@ -231,7 +231,7 @@ bool parse_char() {
 }
 
 int main(int argc, char **argv) {
-    if (argc < 2) {
+    if (argc != 2) {
         fprintf(stderr, "Usage: %s src=FILE\n", argv[0]);
         return EXIT_FAILURE;
     }
@@ -256,10 +256,9 @@ int main(int argc, char **argv) {
     bool using_halt = false; /* '@' */
     bool using_rchr = false; /* '~' */
 
-    /* +2 in case of CRLF */
-    char line[WIDTH + 2];
-    int y = 0;
-    while (fgets(line, sizeof(line), file)) {
+    /* +3 in case of CRLF+\0 */
+    char line[WIDTH + 3];
+    for (int y = 0; fgets(line, sizeof(line), file); y++) {
         for (int x = 0; x < WIDTH; x++) {
             const char c = line[x];
             if (!in(' ', c, '~')) break;
@@ -273,7 +272,6 @@ int main(int argc, char **argv) {
             case '~': using_rchr = true; break;
             }
         }
-        y++;
     }
     fclose(file);
 
