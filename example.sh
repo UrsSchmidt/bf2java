@@ -12,7 +12,7 @@ fi
 if [ -f "$befunge" ]; then
     ./bf2java "$befunge" > "$jasmin"
     if [ -f "$jasmin" ]; then
-        assemble "$jasmin" >/dev/null
+        assemble "$jasmin"
         if [ -f "$class" ]; then
             java -noverify "$classname"
         else
