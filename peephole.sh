@@ -1,5 +1,11 @@
 #!/bin/bash
 
+if [[ "$#" -ne 1 ]]
+then
+    echo 'Usage: peephole <file>'
+    exit 1
+fi
+
 export LC_ALL=C
 
 # see: https://stackoverflow.com/a/8574392
@@ -27,7 +33,7 @@ done < <(grep -v $regexcomment "$1")
 # (and no instructions use L1)
 # -->
 # (empty)
-function removeDeadLabels() {
+removeDeadLabels() {
     newLines=()
     usedLabels=()
     for line in "${lines[@]}"; do
@@ -55,7 +61,7 @@ function removeDeadLabels() {
 # -->
 # goto L1
 # L2:
-function removeDeadCode() {
+removeDeadCode() {
     newLines=()
     deadCode=false
     for line in "${lines[@]}"; do
@@ -75,7 +81,7 @@ function removeDeadCode() {
 # L1:
 # -->
 # L1:
-function removeRedundantJumps() {
+removeRedundantJumps() {
     newLines=()
     lastLine=""
     for line in "${lines[@]}"; do
@@ -109,8 +115,8 @@ function removeRedundantJumps() {
 # -->
 # L1:
 # (and all instructions using L2 use L1 now)
-function removeRedundantLabels() {
-    # TODO implement
+removeRedundantLabels() {
+    : # TODO implement
 }
 
 # goto L1
@@ -119,8 +125,8 @@ function removeRedundantLabels() {
 # -->
 # goto L1
 # (and all instructions using L2 use L3 now)
-function removeRedundantIndirections() {
-    # TODO implement
+removeRedundantIndirections() {
+    : # TODO implement
 }
 
 # apply all optimizations
