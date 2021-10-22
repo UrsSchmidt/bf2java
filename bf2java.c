@@ -16,7 +16,6 @@
 #define LOCALS 1
 
 #define in(a,b,c) (((a)<=(b))&&((b)<=(c)))
-#define label(x,y,a) (((((y)*(WIDTH))+(x))*10)+(a))
 
 char source[WIDTH][HEIGHT];
 bool visited[WIDTH][HEIGHT];
@@ -78,23 +77,23 @@ bool parse_char() {
             c == '_' || c == '|') {
             /* end path if already visited */
             if (visited[x][y]) {
-                printf("  goto LBRANCH%d\n", label(x, y, 0));
+                printf("  goto LBRANCH_%d_%d_%d\n", x, y, 0);
                 return false;
             }
             /* otherwise generate new label */
-            printf("LBRANCH%d:\n", label(x, y, 0));
+            printf("LBRANCH_%d_%d_%d:\n", x, y, 0);
             visited[x][y] = true;
         }
         switch (c) {
         case ' ': break;
         case '!':
             printf("; '!' begin @%d,%d\n", x, y);
-            printf("  ifeq LLOCAL%d\n", locallabel);
+            printf("  ifeq LLOCAL_%d\n", locallabel);
             printf("  bipush 0\n");
-            printf("  goto LLOCAL%d\n", locallabel + 1);
-            printf("LLOCAL%d:\n", locallabel);
+            printf("  goto LLOCAL_%d\n", locallabel + 1);
+            printf("LLOCAL_%d:\n", locallabel);
             printf("  bipush 1\n");
-            printf("LLOCAL%d:\n", locallabel + 1);
+            printf("LLOCAL_%d:\n", locallabel + 1);
             printf("; '!' end @%d,%d\n", x, y);
             locallabel += 2;
             break;
@@ -129,53 +128,53 @@ bool parse_char() {
             printf("  iconst_1\n");
             printf("  isub\n");
             printf("  putstatic Field %s rnd I\n", CLASSNAME);
-            printf("  ifeq LBRANCH%d\n", label(sx, sy, 1));
+            printf("  ifeq LBRANCH_%d_%d_%d\n", sx, sy, 1);
             printf("  getstatic Field %s rnd I\n", CLASSNAME);
             printf("  dup\n");
             printf("  iconst_1\n");
             printf("  isub\n");
             printf("  putstatic Field %s rnd I\n", CLASSNAME);
-            printf("  ifeq LBRANCH%d\n", label(sx, sy, 2));
+            printf("  ifeq LBRANCH_%d_%d_%d\n", sx, sy, 2);
             printf("  getstatic Field %s rnd I\n", CLASSNAME);
             printf("  dup\n");
             printf("  iconst_1\n");
             printf("  isub\n");
             printf("  putstatic Field %s rnd I\n", CLASSNAME);
-            printf("  ifeq LBRANCH%d\n", label(sx, sy, 3));
-            printf("  goto LBRANCH%d\n", label(sx, sy, 4));
+            printf("  ifeq LBRANCH_%d_%d_%d\n", sx, sy, 3);
+            printf("  goto LBRANCH_%d_%d_%d\n", sx, sy, 4);
             printf("; '?' middle @%d,%d\n", sx, sy);
             /* right */
-            printf("LBRANCH%d:\n", label(sx, sy, 1));
+            printf("LBRANCH_%d_%d_%d:\n", sx, sy, 1);
             d = RIGHT;
             move();
             parse_path();
             x = sx;
             y = sy;
-            printf("  goto LBRANCH%d\n", label(sx, sy, 5));
+            printf("  goto LBRANCH_%d_%d_%d\n", sx, sy, 5);
             /* down */
-            printf("LBRANCH%d:\n", label(sx, sy, 2));
+            printf("LBRANCH_%d_%d_%d:\n", sx, sy, 2);
             d = DOWN;
             move();
             parse_path();
             x = sx;
             y = sy;
-            printf("  goto LBRANCH%d\n", label(sx, sy, 5));
+            printf("  goto LBRANCH_%d_%d_%d\n", sx, sy, 5);
             /* left */
-            printf("LBRANCH%d:\n", label(sx, sy, 3));
+            printf("LBRANCH_%d_%d_%d:\n", sx, sy, 3);
             d = LEFT;
             move();
             parse_path();
             x = sx;
             y = sy;
-            printf("  goto LBRANCH%d\n", label(sx, sy, 5));
+            printf("  goto LBRANCH_%d_%d_%d\n", sx, sy, 5);
             /* up */
-            printf("LBRANCH%d:\n", label(sx, sy, 4));
+            printf("LBRANCH_%d_%d_%d:\n", sx, sy, 4);
             d = UP;
             move();
             parse_path();
             x = sx;
             y = sy;
-            printf("LBRANCH%d:\n", label(sx, sy, 5));
+            printf("LBRANCH_%d_%d_%d:\n", sx, sy, 5);
             printf("; '?' end @%d,%d\n", sx, sy);
         }   break;
         case '@': printf("  goto LHALT\n"); break;
@@ -183,12 +182,12 @@ bool parse_char() {
         case '^': d = UP; break;
         case '`':
             printf("; '`' begin @%d,%d\n", x, y);
-            printf("  if_icmpgt LLOCAL%d\n", locallabel);
+            printf("  if_icmpgt LLOCAL_%d\n", locallabel);
             printf("  bipush 0\n");
-            printf("  goto LLOCAL%d\n", locallabel + 1);
-            printf("LLOCAL%d:\n", locallabel);
+            printf("  goto LLOCAL_%d\n", locallabel + 1);
+            printf("LLOCAL_%d:\n", locallabel);
             printf("  bipush 1\n");
-            printf("LLOCAL%d:\n", locallabel + 1);
+            printf("LLOCAL_%d:\n", locallabel + 1);
             printf("; '`' end @%d,%d\n", x, y);
             locallabel += 2;
             break;
@@ -201,23 +200,23 @@ bool parse_char() {
             const int sx = x;
             const int sy = y;
             printf("; '%c' begin @%d,%d\n", c, sx, sy);
-            printf("  ifne LBRANCH%d\n", label(sx, sy, 1));
+            printf("  ifne LBRANCH_%d_%d_%d\n", sx, sy, 1);
             /* right/down (if false) */
             d = (c == '_') ? RIGHT : DOWN;
             move();
             parse_path();
             x = sx;
             y = sy;
-            printf("  goto LBRANCH%d\n", label(sx, sy, 2));
+            printf("  goto LBRANCH_%d_%d_%d\n", sx, sy, 2);
             /* left/up (if true) */
-            printf("LBRANCH%d:\n", label(sx, sy, 1));
+            printf("LBRANCH_%d_%d_%d:\n", sx, sy, 1);
             d = (c == '_') ? LEFT : UP;
             move();
             parse_path();
             x = sx;
             y = sy;
             /* end */
-            printf("LBRANCH%d:\n", label(sx, sy, 2));
+            printf("LBRANCH_%d_%d_%d:\n", sx, sy, 2);
             printf("; '%c' end @%d,%d\n", c, sx, sy);
         }   break;
         default: printf("; '%c' not supported @%d,%d\n", c, x, y);

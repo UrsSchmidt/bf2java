@@ -17,7 +17,7 @@ containsElement () {
 }
 
 # all commonly used regexes
-regexlabel='L[A-Z]+[0-9]*'
+regexlabel='L[0-9A-Z_]+'
 regexcomment='^;.*$'
 regexlabelcolon='^'$regexlabel':$'
 regexgoto='^[[:space:]]+goto[[:space:]]+'$regexlabel'$'
