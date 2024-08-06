@@ -10,7 +10,7 @@ CFLAGS=-std=c18 -Wall -Wpedantic
 LDLIBS=
 
 $(TARGET_EXEC): $(SRC)/$(TITLE).c
-	$(CC) $(CFLAGS) -o $@ $(SRC)/$(TITLE).c $(LDLIBS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDLIBS)
 
 # install/uninstall targets
 
